@@ -40,20 +40,29 @@ def generate_participant_dict(match_metadata, teams):
             'championId': participant['championId'],
             'role': participant['timeline']['role'],
             'lane': participant['timeline']['lane'],
+            'total_kills': participant['stats']['kills'],
+            'total_deaths': participant['stats']['deaths'],
+            'total_assists': participant['stats']['assists'],
             **teams[participant['teamId']]
         }
-
     return participants
 
 
 def generate_match_frames(match_frames, participants):
     """Generates an array containing match frames combined with participant and team data"""
     frames = []
+    events = []
 
     for frame in match_frames:
         participant_frames = list(frame['participantFrames'].values())
+        events.extend(filter(lambda x: x['type'] == 'CHAMPION_KILL', frame['events']))
 
         for participant_frame in participant_frames:
+            kills = len(list(filter(lambda x: x['killerId'] == participant_frame['participantId'], events)))
+            deaths = len(list(filter(lambda x: x['victimId'] == participant_frame['participantId'], events)))
+            assists = len(
+                list(filter(lambda x: participant_frame['participantId'] in x['assistingParticipantIds'], events)))
+
             frames.append({
                 'timestamp': frame['timestamp'],
                 'participantId': participant_frame['participantId'],
@@ -61,9 +70,11 @@ def generate_match_frames(match_frames, participants):
                 'level': participant_frame['level'],
                 'xp': participant_frame['xp'],
                 'minionsKilled': participant_frame['minionsKilled'],
+                'kills': kills,
+                'deaths': deaths,
+                'assists': assists,
                 **participants[participant_frame['participantId']]
             })
-
     return frames
 
 
