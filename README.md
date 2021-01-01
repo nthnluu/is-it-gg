@@ -27,9 +27,9 @@ jupyter notebook
 ```
 Make a prediction:
 
-```bash
-data = [timestamp, currentGold, level, xp, minionsKilled, firstBlood, firstTower]
-logistic_regression.predict((np.array(data).reshape(1, -1)))
+```python
+predict(timestamp=1187000, currentGold=1340, level=10, minionsKilled=88, firstBlood=True, firstTower=True) # Won
+predict(timestamp=1187000, currentGold=123, level=4, minionsKilled=12, firstBlood=False, firstTower=True) # Loss
 ```
 
 
